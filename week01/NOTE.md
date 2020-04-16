@@ -15,3 +15,5 @@ winter提议说，我们每个人都应该有自己的前端体系，这样当�
 *认真学习的方式只有一种，只不过我太想走近路了而已*。
 
 关于脑图，今天出门在外，明天回去再补。233
+
+[脑图链接](https://www.youtube.com/watch?v=ZsAM82lX5wY&list=PLat5PBX57wqac5g5unneDxS4QyY131YIW)
