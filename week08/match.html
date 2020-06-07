@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="main">
+    <div id="app" class="container">css</div>
+  </div>
+  <script>
+    function selectorFn(selector, element) {
+      const regPattern = /(#[a-zA-Z]+[_a-zA-Z0-9-]*?)|(\.-?[_a-zA-Z]+[_a-zA-Z0-9-]*)|([a-z]+)/g;
+      const selectorArray = selector.match(regPattern);
+      let isMatch = false;
+      if (element.hasAttributes()) {
+        const attributes = element.attributes;
+        for (let i = 0; i < attributes.length; i++) {
+          const attr = attributes[i];
+          for (const selector of selectorArray) {
+            if (selector.charAt(0) === "#") {
+              if (attr && attr.value === selector.replace("#", "")) {
+                isMatch = true;
+              }
+            } else if (selector.charAt(0) === ".") {
+              if (attr && attr.value === selector.replace(".", "")) {
+                isMatch = true;
+              }
+            }
+          }
+        }
+      } else {
+        if (element.tagName.toLowerCase() === selector) {
+          isMatch = true;
+        }
+      }
+      return isMatch;
+    }
+
+    function match(selector, element) {
+      if (!selector || !element.attributes) {
+        return false;
+      }
+      if (element.hasChildNodes()) {
+        const elements = element.children;
+        for (let i = 0; i < elements.length; i++) {
+          const child = elements[i];
+          return selectorFn(selector, child);
+        }
+      } else {
+        return selectorFn(selector, element);
+      }
+    }
+
+    console.log(match("#app.container", document.getElementById("main")));
+  </script>
+</body>
+
+</html>
