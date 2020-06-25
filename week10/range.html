@@ -1,0 +1,13 @@
+<div id="a">
+    123<span style="background-color: aquamarine;">456</span>789abcdefg
+</div>
+<script>
+    // range的精确操作
+    let element1 = document.getElementById('a').childNodes[1].childNodes[0];
+    let element2 = document.getElementById('a').childNodes[2];
+    let range = new Range();
+    range.setStart(element1,2);
+    range.setEnd(element2,5);
+    range.extractContents();
+    
+</script>

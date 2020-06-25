@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Traffic Light</title>
+    <style>
+        div{background-color: gray;width: 100px;height: 100px;
+        display: inline-block;margin-left: 25px;border-radius: 50px;}
+        .green.light{background-color: green;}
+        .yellow.light{background-color:yellow;}
+        .red.light{background-color:red;}
+        
+    </style>
+</head>
+<body>
+    <div class="green"></div>
+    <div class="yellow"></div>
+    <div class="red"></div>
+    <button class="next">next</button>
+    <script>
+        function green(){
+            let light = document.getElementsByTagName('div');
+            for(var i = 0;i < 3;i++)
+                light[i].classList.remove('light');
+            document.getElementsByClassName('green')[0].classList.add('light');
+        }
+        function yellow(){
+            let light = document.getElementsByTagName('div');
+            for(var i = 0;i < 3;i++)
+                light[i].classList.remove('light');
+            document.getElementsByClassName('yellow')[0].classList.add('light');
+        }
+        function red(){
+            let light = document.getElementsByTagName('div');
+            for(var i = 0;i < 3;i++)
+                light[i].classList.remove('light');
+            document.getElementsByClassName('red')[0].classList.add('light');
+        }
+ 
+        function sleep(t){
+            return new Promise((resolve,reject)=>{
+                setTimeout(resolve,t);
+            })
+        }
+//promise写法   
+        function go() {
+            green();
+            sleep(5000).then(()=>{
+                yellow();
+                return sleep(1000);
+            }).then(()=>{
+                red();
+                return sleep(2000);
+            }).then(()=>{
+                go();
+            })
+
+          }
+
+        //   async，await写法
+          async function go1(){
+            green();
+            await sleep(5000);
+            yellow();
+            await sleep(1000);
+            red();
+            await sleep(2000);
+            go1();
+            
+          }
+// 手动点击幻灯
+          function happen(element,event){
+              return new Promise((resolve,reject)=>{
+                //   document.getElementsByClassName('next').addEventListener('click',resolve,{once:true});
+                  element.addEventListener(event,resolve,{once:true});
+              });
+          }
+          async  function go2(){
+            green();
+            await happen(document.getElementsByClassName('next')[0],'click');
+            yellow();
+            await happen(document.getElementsByClassName('next')[0],'click');
+            red();
+            await happen(document.getElementsByClassName('next')[0],'click');
+            go2();
+          }
+
+// generator
+          function* go3() {
+              while(true){
+                green();
+                yield sleep(5000);
+                yellow();
+                yield sleep(1000);
+                red();
+                yield sleep(4000);
+            }
+          }
+
+          function run(iterator) {
+              let {value,done} = iterator.next();
+              if(done)
+                return;
+             if(value instanceof Promise)
+                value.then(()=>{run(iterator)})
+            }
+            // run(go3());
+            function co(generator) {
+                return function () {
+                    return run(generator())
+                  }
+              }
+              goo=co(go3);
+              goo();
+
+        // 叠加写法
+        function go4() {
+            green();
+            setTimeout(yellow,5000);
+            setTimeout(red,6000)
+            setTimeout(go,8000);
+
+          }
+        //   callback写法
+          function go5() {
+            green();
+            setTimeout(function () { 
+                yellow();
+                setTimeout(function(){
+                    red();
+                    setTimeout(function (){
+                        go2();
+                    },2000)
+                },1000)
+             },5000);
+           
+          }
+    </script>
+</body>

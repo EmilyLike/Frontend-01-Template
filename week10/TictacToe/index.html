@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>TicTacToe</title>
+    <style>
+        .cell {
+        width:100px;
+        height:100px;
+        background-color: green;
+        display:inline-block;
+        border:solid 1px white;
+        vertical-align: middle;
+
+        line-height: 100px;
+        font-size: 50px;
+        text-align: center;
+    }  
+    </style>
+</head>
+<body>
+    <div id="board"></div>
+    <script>
+        let pattern = [
+            [0,0,0],
+            [0,0,0],
+            [0,0,0]
+        ]
+
+        let color = 1;
+
+        
+        function show(){
+            let board = document.getElementById("board");
+            board.innerHTML = "";
+    
+            for(let i = 0; i < 3; i++){
+                for(let j = 0; j < 3; j++){
+                    let cell = document.createElement("div");
+                    cell.classList.add("cell");
+                    cell.innerText = pattern[i][j] == 2 ? "❌" :
+                        pattern[i][j] == 1 ? "⭕️" : "";
+
+                    cell.addEventListener("click", () => userMove(j, i));
+                    board.appendChild(cell);
+                }
+                board.appendChild(document.createElement("br"))
+            }
+        }
+        
+        function userMove(x,y) {
+            if(pattern[y][x] != 0){
+                return;
+            }
+            pattern[y][x]=color;
+           
+            if(check(pattern,color)){
+                alert(color == 2 ? "❌ is winner!!" : "⭕️ is winner!!");
+            }
+            color = 3 - color;
+            show();
+            computeMove();
+            // if(willWin(pattern,color)){
+            //     console.log(color == 2 ? "❌ will winner!!" : "⭕️ will winner!!");
+            // }
+        }
+
+        function computeMove() { 
+            let choice = bestChoice(pattern,color);
+            if(choice.point)
+                pattern[choice.point[1]][choice.point[0]] = color;
+            if(check(pattern,color)){
+                alert(color == 2 ? "❌ is winner!!" : "⭕️ is winner!!");
+            }
+            color=3 - color;
+            show();
+         }
+
+//check是检查棋盘中横竖以及两种交叉是否有赢局
+        function check(pattern,color) {
+            for(let i = 0;i < 3;i++){
+                let win = true;
+                for(let j = 0;j < 3;j++){
+                    if (pattern[i][j] != color){
+                        win = false;
+                        break;
+                    }
+                }
+                if(win){
+                return true;
+               
+                }
+              
+            }
+
+            for(let i = 0;i < 3;i++){
+                let win = true;
+                for(let j = 0;j < 3;j++){
+                    if (pattern[j][i] != color){
+                        win = false;
+                        break;
+                    }
+                }
+                if(win){
+                return true;
+               
+                }
+            }
+
+            for(let i = 0;i < 3;i++){
+                let win = true;
+                for(let j = 0;j < 3;j++){
+                    if (pattern[j][j] != color){
+                        win = false;
+                        break;
+                    }
+                }
+                if(win){
+                return true;
+               
+                }
+            }
+
+            for(let i = 0;i < 3;i++){
+                let win = true;
+                for(let j = 0;j < 3;j++){
+                    if (pattern[j][2-j] != color){
+                        win = false;
+                        break;
+                    }
+                }
+                if(win){
+                return true;
+               
+                }
+            }
+            return false;            
+        }
+
+        function clone(pattern) {
+            return JSON.parse(JSON.stringify(pattern));
+        }
+       
+        function willWin(pattern,color) {
+            for(let i = 0;i < 3;i++){
+                for(let j = 0;j < 3;j++){
+                    if(pattern[i][j] !=0)
+                        continue;
+                    let tmp = clone(pattern);
+                    tmp[i][j] = color;
+                    if(check(tmp,color)){
+                        return [j,i];
+                    }
+                }
+            }
+            return null;
+        }
+
+
+        let openings = new Map();
+        openings.set([
+            [0,0,0],
+            [0,0,0],
+            [0,0,0]
+        ].toString()+'1',{
+            point:[1,1],
+            result:0
+        })
+
+        function bestChoice(pattern,color){
+            if(openings.has(pattern.toString()+color)){
+                return openings.get(pattern.toString()+color);
+            }
+
+            let point = null;
+
+            if(point=willWin(pattern,color)){
+                return{
+                    point:point,
+                    result:1
+                }
+            }
+            let result = -1;
+            outer:for(let i = 0;i < 3;i++){
+                for(let j = 0;j < 3;j++){
+                    if(pattern[i][j] !=0)
+                        continue;
+                    let tmp = clone(pattern);
+                    tmp[i][j] = color;
+                    let opp = bestChoice(tmp,3-color);
+                    if(-opp.result>=result){//对面最坏的情况就是我方最好的情况
+                        point=[j,i];
+                        result=-opp.result;
+                    }
+                    if(result==1){
+                        break outer;
+                    }   
+                }
+            }
+
+            return{
+                point:point,
+                result:point ? result : 0
+            }
+        }
+        show()
+    </script>
+</body>
